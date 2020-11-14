@@ -1,0 +1,35 @@
+<html>
+<head>
+<script src="CcBigTable.js"></script>
+</head>
+<body>
+<div style="position: absolute;top:0px;left:0px;width:100%;height:100%;">
+<cc-big-table style="position: absolute;top:0px;left:0px;width:100%;height:100%;"></cc-big-table>
+</div>
+<script type="text/javascript">
+
+var bigtable = document.body.querySelector("cc-big-table");
+
+bigtable.cellrenderer = (colelem, datacol, datarow, uiRowIndex, uiColIndex) => {
+  colelem.innerText = "Row:" + uiRowIndex + ",Col:" + uiColIndex;
+}
+
+bigtable.data = [];
+for (var i = 0; i < 10000; i++) {
+  bigtable.data.push (new CcBigTableDataRow(false, i < 2, 20 + (i % 10)));
+}
+
+bigtable.headerDef = {
+  cols : [],
+};
+
+for (var i = 0; i < 10000; i++) {
+  bigtable.headerDef.cols.push (new CcBigTableDataCol(false, i < 2, 100));
+}
+
+
+bigtable.fillRows ();
+
+</script>
+</body>
+</html>

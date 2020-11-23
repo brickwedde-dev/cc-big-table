@@ -10,7 +10,7 @@
 
 var bigtable = document.body.querySelector("cc-big-table");
 
-bigtable.cellrenderer = (colelem, datacol, datarow, uiRowIndex, uiColIndex) => {
+bigtable.cellrenderer = (rowelem, colelem, datacol, datarow, uiRowIndex, uiColIndex) => {
   colelem.innerText = "Row:" + uiRowIndex + ",Col:" + uiColIndex;
 }
 

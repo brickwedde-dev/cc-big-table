@@ -3,14 +3,14 @@ class CcBigTable extends HTMLElement {
     super();
 
     this.lineHeight = 25;
-    this.data = [[]];
+    this.data = [];
 
     this.headerDef = {
       cols : [],
     };
   }
 
-  cellrenderer (colelem, datacol, datarow, uiRowIndex, uiColIndex) {
+  cellrenderer (rowelem, colelem, datacol, datarow, uiRowIndex, uiColIndex) {
     colelem.innerText = datacol ? datacol : "";
   }
 
@@ -111,7 +111,6 @@ class CcBigTable extends HTMLElement {
 
       if (fixed) {
         aFixed.push(rowelem);
-        rowelem.style.backgroundColor = "white";
       } else {
         rowelem.style.backgroundColor = "";
       }
@@ -185,6 +184,11 @@ class CcBigTableDataCol {
 }
 
 class CcBigTableRow extends HTMLElement {
+  constructor() {
+    super();
+    this.style.boxSizing = "border-box";
+  }
+
   fillCols(cellrenderer, uiRowIndex, datarow, headerDef, uiLeft, uiRight) {
     var aCols = this.querySelectorAll("cc-big-table-cell") || [];
     var aColsIndex = -1;
@@ -230,7 +234,6 @@ class CcBigTableRow extends HTMLElement {
 
       if (fixed) {
         aFixed.push (colelem);
-        colelem.style.backgroundColor = "white";
       } else {
         colelem.style.backgroundColor = "";
       }
@@ -244,7 +247,7 @@ class CcBigTableRow extends HTMLElement {
       uiFixedLeftCount += width;
 
       var datacol = (datarow && datarow.coldata) ? datarow.coldata[uiColIndex] : null;
-      cellrenderer (colelem, datacol, datarow, uiRowIndex, uiColIndex);
+      cellrenderer (this, colelem, datacol, datarow, uiRowIndex, uiColIndex);
     }
 
     aColsIndex++;
@@ -259,6 +262,10 @@ class CcBigTableRow extends HTMLElement {
 }
 
 class CcBigTableCell extends HTMLElement {
+  constructor() {
+    super();
+    this.style.boxSizing = "border-box";
+  }
 }
 
 class CcBigTableLastPixel extends HTMLElement {

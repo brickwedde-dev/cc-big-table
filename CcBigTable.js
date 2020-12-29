@@ -123,7 +123,7 @@ class CcBigTable extends HTMLElement {
       uiTopCount += height;
       uiFixedTopCount += height;
 
-      rowelem.fillCols(this.cellrenderer, uiRowIndex, datarow, this.headerDef, uiLeft, uiRight);
+      rowelem.fillCols(this, this.cellrenderer, uiRowIndex, datarow, this.headerDef, uiLeft, uiRight);
     }
 
     aRowsIndex++;
@@ -142,6 +142,14 @@ class CcBigTable extends HTMLElement {
       this.scrollarea.appendChild(aFixed[i]);
     }
   }
+
+  setSortingAndEvent(coldef, setto) {
+    for(var i = 0; i < this.headerDef.cols.length; i++) {
+      this.headerDef.cols[i].activesorting = CcBigTableDataCol_Sorting_None;
+    }
+    coldef.activesorting = setto;
+    this.dispatchEvent(new CustomEvent("sorting", {detail:coldef}));
+  }
 }
 
 class CcBigTableDataRow {
@@ -151,7 +159,7 @@ class CcBigTableDataRow {
     this.height = height;
     this.data = data;
   }
-  
+
   getHidden() {
     return this.hidden;
   }
@@ -165,11 +173,19 @@ class CcBigTableDataRow {
   }
 }
 
+const CcBigTableDataCol_Sorting_None = 0;
+const CcBigTableDataCol_Sorting_Up = 1;
+const CcBigTableDataCol_Sorting_Down = 2;
+const CcBigTableDataCol_Sorting_UpDown = 3;
+
 class CcBigTableDataCol {
-  constructor (hidden, fixed, width) {
+  constructor (hidden, fixed, width, data, sorting) {
     this.hidden = hidden;
     this.fixed = fixed;
     this.width = width;
+    this.data = data;
+    this.sorting = sorting || CcBigTableDataCol_Sorting_None;
+    this.activesorting = CcBigTableDataCol_Sorting_None;
   }
 
   getHidden() {
@@ -191,19 +207,19 @@ class CcBigTableRow extends HTMLElement {
     this.style.boxSizing = "border-box";
   }
 
-  fillCols(cellrenderer, uiRowIndex, datarow, headerDef, uiLeft, uiRight) {
+  fillCols(bigtable, cellrenderer, uiRowIndex, datarow, headerDef, uiLeft, uiRight) {
     var aCols = this.querySelectorAll("cc-big-table-cell") || [];
     var aColsIndex = -1;
     var uiLeftCount = 0;
     var uiFixedLeftCount = uiLeft;
     var aFixed = [];
 
-    for(var uiColIndex = 0; uiColIndex < headerDef.cols.length; uiColIndex++) {
+    for(let uiColIndex = 0; uiColIndex < headerDef.cols.length; uiColIndex++) {
       if (uiLeftCount > uiRight) {
         break;
       }
 
-      var coldef = headerDef.cols[uiColIndex];
+      let coldef = headerDef.cols[uiColIndex];
       if (!coldef instanceof CcBigTableDataCol) {
         continue;
       }
@@ -224,7 +240,7 @@ class CcBigTableRow extends HTMLElement {
         uiColLeft = uiLeftCount;
       }
 
-      var colelem = null;
+      let colelem = null;
       if (aColsIndex + 1 < aCols.length) {
         aColsIndex++;
         colelem = aCols[aColsIndex];
@@ -242,14 +258,50 @@ class CcBigTableRow extends HTMLElement {
       colelem.style.overflow = "hidden";
       colelem.style.left = uiColLeft + "px";
       colelem.style.position = "absolute";
-      colelem.style.width = width + "px";
       colelem.style.height = "100%";
       colelem.style.top = "0px";
+      colelem.style.width = width + "px";
+
       uiLeftCount += width;
       uiFixedLeftCount += width;
 
       var datacol = (datarow && datarow.coldata) ? datarow.coldata[uiColIndex] : null;
       cellrenderer (this, colelem, datacol, datarow, uiRowIndex, uiColIndex);
+
+      if (uiRowIndex == 0 && (coldef.sorting & CcBigTableDataCol_Sorting_UpDown) != 0) {
+        var sortingicon = document.createElement("i");
+        sortingicon.style.right = "0px";
+        sortingicon.style.position = "absolute";
+        sortingicon.style.height = "100%";
+        sortingicon.style.top = "0px";
+        sortingicon.style.width = "20px";
+        sortingicon.style.cursor = "pointer";
+        sortingicon.style.fontSize = "17px";
+        sortingicon.style.lineHeight = datarow.height + "px";
+        sortingicon.className = "material-icons mdc-button__icon";
+        let setto = CcBigTableDataCol_Sorting_None;
+        switch (coldef.activesorting) {
+          case CcBigTableDataCol_Sorting_Up:
+            sortingicon.innerText = "north";
+            setto = CcBigTableDataCol_Sorting_Down;
+            break;
+          case CcBigTableDataCol_Sorting_Down:
+            sortingicon.innerText = "south";
+            setto = CcBigTableDataCol_Sorting_Up;
+            break;
+          default:
+          case CcBigTableDataCol_Sorting_None:
+            sortingicon.innerText = "unfold_more";
+            setto = CcBigTableDataCol_Sorting_Up;
+            break;
+        }
+        sortingicon.addEventListener("click", (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          bigtable.setSortingAndEvent(coldef, setto);
+        });
+        colelem.appendChild (sortingicon);
+      }
     }
 
     aColsIndex++;

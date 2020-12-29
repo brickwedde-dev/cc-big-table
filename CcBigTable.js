@@ -145,11 +145,13 @@ class CcBigTable extends HTMLElement {
 }
 
 class CcBigTableDataRow {
-  constructor (hidden, fixed, height) {
+  constructor (hidden, fixed, height, data) {
     this.hidden = hidden;
     this.fixed = fixed;
     this.height = height;
+    this.data = data;
   }
+  
   getHidden() {
     return this.hidden;
   }

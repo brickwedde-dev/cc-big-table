@@ -148,7 +148,44 @@ class CcBigTable extends HTMLElement {
       this.headerDef.cols[i].activesorting = CcBigTableDataCol_Sorting_None;
     }
     coldef.activesorting = setto;
-    this.dispatchEvent(new CustomEvent("sorting", {detail:coldef}));
+    var notcancelled = this.dispatchEvent(new CustomEvent("sorting", {detail:coldef, cancelable: true}));
+    if (notcancelled) {
+      var sortfield = coldef.data;
+      var reverse = 1;
+      switch(coldef.activesorting) {
+        case CcBigTableDataCol_Sorting_Down:
+          reverse = -1;
+          break;
+      }
+
+      var localcompare = new Intl.Collator("de", {sensitivity : "base"}).compare;
+
+      this.data.sort((rowa, rowb) => {
+        var a = rowa.data;
+        var b = rowb.data;
+        if (!a) {
+          return -1;
+        }
+        if (!b) {
+          return 1;
+        }
+        if (a[sortfield] && b[sortfield]) {
+          var i = localcompare (a[sortfield], b[sortfield]);
+          if (i != 0) {
+            return i * reverse;
+          }
+        }
+        if (a[sortfield]) {
+          return 1 * reverse;
+        }
+        if (b[sortfield]) {
+          return -1 * reverse;
+        }
+        return a["_id"].localeCompare(b["_id"]) * reverse;
+      });
+      this.fillRows();
+    }
+
   }
 }
 

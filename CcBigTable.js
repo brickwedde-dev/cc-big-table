@@ -99,15 +99,20 @@ class CcBigTable extends HTMLElement {
         uiRowTop = uiTopCount;
       }
 
-      var rowelem = null;
+      let rowelem = null;
       if (aRowsIndex + 1 < aRows.length) {
         aRowsIndex++;
         rowelem = aRows[aRowsIndex];
       }
       if (!rowelem) {
         rowelem = new CcBigTableRow ();
+        rowelem.addEventListener("click", (e) => {
+          this.rowClick(rowelem.uiRowIndex);
+        });
         this.scrollarea.appendChild(rowelem);
       }
+
+      rowelem.uiRowIndex = uiRowIndex;
 
       if (fixed) {
         aFixed.push(rowelem);
@@ -141,6 +146,11 @@ class CcBigTable extends HTMLElement {
     for(var i = 0; i < aFixed.length; i++) {
       this.scrollarea.appendChild(aFixed[i]);
     }
+  }
+
+  rowClick(uiRowIndex) {
+    var datarow = this.data[uiRowIndex];
+    this.dispatchEvent(new CustomEvent("rowclick", {detail: datarow}));
   }
 
   setSortingAndEvent(coldef, setto) {

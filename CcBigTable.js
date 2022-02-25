@@ -160,42 +160,45 @@ class CcBigTable extends HTMLElement {
     coldef.activesorting = setto;
     var notcancelled = this.dispatchEvent(new CustomEvent("sorting", {detail:coldef, cancelable: true}));
     if (notcancelled) {
-      var sortfield = coldef.data;
-      var reverse = 1;
+      this.sortfield = coldef.data;
+      this.reverse = 1;
       switch(coldef.activesorting) {
         case CcBigTableDataCol_Sorting_Down:
-          reverse = -1;
+          this.reverse = -1;
           break;
       }
-
-      var localcompare = new Intl.Collator("de", {sensitivity : "base"}).compare;
-
-      this.data.sort((rowa, rowb) => {
-        var a = rowa.data;
-        var b = rowb.data;
-        if (!a) {
-          return -1;
-        }
-        if (!b) {
-          return 1;
-        }
-        if (a[sortfield] && b[sortfield]) {
-          var i = localcompare (a[sortfield], b[sortfield]);
-          if (i != 0) {
-            return i * reverse;
-          }
-        }
-        if (a[sortfield]) {
-          return 1 * reverse;
-        }
-        if (b[sortfield]) {
-          return -1 * reverse;
-        }
-        return a["_id"].localeCompare(b["_id"]) * reverse;
-      });
-      this.fillRows();
+      this.doSort()
     }
 
+  }
+
+  doSort() {
+    var localcompare = new Intl.Collator("de", {sensitivity : "base"}).compare;
+
+    this.data.sort((rowa, rowb) => {
+      var a = rowa.data;
+      var b = rowb.data;
+      if (!a) {
+        return -1;
+      }
+      if (!b) {
+        return 1;
+      }
+      if (a[this.sortfield] && b[this.sortfield]) {
+        var i = localcompare (a[this.sortfield], b[this.sortfield]);
+        if (i != 0) {
+          return i * this.reverse;
+        }
+      }
+      if (a[this.sortfield]) {
+        return 1 * this.reverse;
+      }
+      if (b[this.sortfield]) {
+        return -1 * this.reverse;
+      }
+      return a["_id"].localeCompare(b["_id"]) * this.reverse;
+    });
+    this.fillRows();
   }
 }
 

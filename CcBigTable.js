@@ -24,6 +24,8 @@ class CcBigTable extends HTMLElement {
         break;
     }
 
+    this.sortfieldNumerical = false;
+
     this.headerheight = 25;
 
     this.scrollarea = document.createElement("div");
@@ -158,9 +160,30 @@ class CcBigTable extends HTMLElement {
       this.headerDef.cols[i].activesorting = CcBigTableDataCol_Sorting_None;
     }
     coldef.activesorting = setto;
+    this.applySorting();
+  }
+
+  applySorting() {
+    var coldef = null;
+    for(var i = 0; i < this.headerDef.cols.length; i++) {
+      switch (this.headerDef.cols[i].activesorting) {
+        case CcBigTableDataCol_Sorting_None:
+          break;
+        case CcBigTableDataCol_Sorting_Down:
+        case CcBigTableDataCol_Sorting_Up:
+          coldef = this.headerDef.cols[i];
+          break;
+      }
+    }
+
+    if (!coldef) {
+      return;
+    }
+
     var notcancelled = this.dispatchEvent(new CustomEvent("sorting", {detail:coldef, cancelable: true}));
     if (notcancelled) {
       this.sortfield = coldef.data;
+      this.sortfieldSortType = coldef.sorttype;
       this.reverse = 1;
       switch(coldef.activesorting) {
         case CcBigTableDataCol_Sorting_Down:
@@ -169,7 +192,6 @@ class CcBigTable extends HTMLElement {
       }
       this.doSort()
     }
-
   }
 
   doSort() {
@@ -184,19 +206,23 @@ class CcBigTable extends HTMLElement {
       if (!b) {
         return 1;
       }
-      if (a[this.sortfield] && b[this.sortfield]) {
-        var i = localcompare (a[this.sortfield], b[this.sortfield]);
-        if (i != 0) {
-          return i * this.reverse;
+      if (this.sortfieldSortType == CcBigTableDataCol_SortType_Numerical) {
+        return (parseFloat(a[this.sortfield]) - parseFloat(b[this.sortfield])) * this.reverse;
+      } else {
+        if (a[this.sortfield] && b[this.sortfield]) {
+          var i = localcompare (a[this.sortfield], b[this.sortfield]);
+          if (i != 0) {
+            return i * this.reverse;
+          }
         }
+        if (a[this.sortfield]) {
+          return 1 * this.reverse;
+        }
+        if (b[this.sortfield]) {
+          return -1 * this.reverse;
+        }
+        return a["_id"].localeCompare(b["_id"]) * this.reverse;
       }
-      if (a[this.sortfield]) {
-        return 1 * this.reverse;
-      }
-      if (b[this.sortfield]) {
-        return -1 * this.reverse;
-      }
-      return a["_id"].localeCompare(b["_id"]) * this.reverse;
     });
     this.fillRows();
   }
@@ -228,14 +254,18 @@ const CcBigTableDataCol_Sorting_Up = 1;
 const CcBigTableDataCol_Sorting_Down = 2;
 const CcBigTableDataCol_Sorting_UpDown = 3;
 
+const CcBigTableDataCol_SortType_String = 1;
+const CcBigTableDataCol_SortType_Numerical = 2;
+
 class CcBigTableDataCol {
-  constructor (hidden, fixed, width, data, sorting) {
+  constructor (hidden, fixed, width, data, sorting, defaultsort, sorttype) {
     this.hidden = hidden;
     this.fixed = fixed;
     this.width = width;
     this.data = data;
     this.sorting = sorting || CcBigTableDataCol_Sorting_None;
-    this.activesorting = CcBigTableDataCol_Sorting_None;
+    this.activesorting = (defaultsort === true) ? CcBigTableDataCol_Sorting_Up : CcBigTableDataCol_Sorting_None;
+    this.sorttype = sorttype ? sorttype : CcBigTableDataCol_SortType_String;
   }
 
   getHidden() {

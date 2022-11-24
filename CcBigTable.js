@@ -8,6 +8,8 @@ class CcBigTable extends HTMLElement {
     this.headerDef = {
       cols : [],
     };
+
+    this.resizehandler = this.resizehandler.bind(this);
   }
 
   cellrenderer (rowelem, colelem, datacol, datarow, uiRowIndex, uiColIndex) {
@@ -41,6 +43,16 @@ class CcBigTable extends HTMLElement {
       this.fillRows ();
     });
 
+    this.fillRows ();
+
+    document.addEventListener('cc-divider-resize', this.resizehandler, false);
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener('cc-divider-resize', this.resizehandler, false);
+  }
+
+  resizehandler (e) {
     this.fillRows ();
   }
 

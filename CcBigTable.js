@@ -9,7 +9,8 @@ class CcBigTable extends HTMLElement {
       cols : [],
     };
 
-    this.resizehandler = this.resizehandler.bind(this);
+    var bound = this.resizehandler.bind(this);
+    this.resizehandler = debounce(bound, 100);
   }
 
   cellrenderer (rowelem, colelem, datacol, datarow, uiRowIndex, uiColIndex) {

@@ -166,6 +166,7 @@ class CcBigTable extends HTMLElement {
   rowClick(uiRowIndex) {
     var datarow = this.data[uiRowIndex];
     this.dispatchEvent(new CustomEvent("rowclick", {detail: datarow}));
+    this.dispatchEvent(new CustomEvent("rowclick2", {detail: { datarow, rowindex: uiRowIndex} }));
   }
 
   setSortingAndEvent(coldef, setto) {

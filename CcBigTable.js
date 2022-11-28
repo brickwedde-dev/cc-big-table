@@ -182,8 +182,6 @@ class CcBigTable extends HTMLElement {
       var height = datarow.getHeight();
       uiTopCount += height;
 
-      console.error("cc", uiTopCount, " ", uiRow, " " , uiRowIndex);
-
       if (uiRowIndex == uiRow) {
         if (uiTopCount < uiTop + uiHeight / 4) {
           this.scrollarea.scrollTop = uiTopCount - uiHeight / 4;

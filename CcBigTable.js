@@ -163,6 +163,38 @@ class CcBigTable extends HTMLElement {
     }
   }
 
+  scrollToRow (uiRow) {
+    var uiTop = this.scrollarea.scrollTop;
+    var uiHeight = this.scrollarea.offsetHeight;
+    var uiBottom = uiTop + uiHeight;
+
+    var uiTopCount = 0;
+
+    for(var uiRowIndex = 0; uiRowIndex < this.data.length; uiRowIndex++) {
+      var datarow = this.data[uiRowIndex];
+      if (!datarow instanceof CcBigTableDataRow) {
+        continue;
+      }
+      if (datarow.getHidden()) {
+        continue;
+      }
+
+      var height = datarow.getHeight();
+      uiTopCount += height;
+
+      console.error("cc", uiTopCount, " ", uiRow, " " , uiRowIndex);
+
+      if (uiRowIndex == uiRow) {
+        if (uiTopCount < uiTop + uiHeight / 4) {
+          this.scrollarea.scrollTop = uiTopCount - uiHeight / 4;
+        } else if (uiTopCount > uiBottom - uiHeight / 4) {
+          this.scrollarea.scrollTop = uiTopCount - uiHeight * 3 / 4;
+        }
+        break;
+      }
+    }
+  }
+
   rowClick(uiRowIndex) {
     var datarow = this.data[uiRowIndex];
     this.dispatchEvent(new CustomEvent("rowclick", {detail: datarow}));

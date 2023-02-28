@@ -265,7 +265,10 @@ class CcBigTable extends HTMLElement {
         if (b[this.sortfield]) {
           return -1 * this.reverse;
         }
-        return a["_id"].localeCompare(b["_id"]) * this.reverse;
+        if (a["_id"] && b["_id"]) {
+          return a["_id"].localeCompare(b["_id"]) * this.reverse;
+        }
+        return 0;
       }
     });
     this.fillRows();

@@ -57,11 +57,36 @@ class CcBigTable extends HTMLElement {
     this.fillRows ();
   }
 
+  fillAllRows() {
+    this.fillRowsRange(0, 0, Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER);
+  }
+
+  print() {
+    this.fillAllRows();
+
+    var mywindow = window.open('', 'PRINT', `height=${window.innerHeight},width=${window.innerWidth}`);
+
+    mywindow.document.write('<html><head><title>' + document.title  + '</title>');
+    mywindow.document.write('</head><body>');
+    mywindow.document.write(this.scrollarea.innerHTML);
+    mywindow.document.write('</body></html>');
+
+    mywindow.document.close(); // necessary for IE >= 10
+    mywindow.focus(); // necessary for IE >= 10*/
+
+    mywindow.print();
+    mywindow.close();
+  }
+
   fillRows () {
     var uiTop = this.scrollarea.scrollTop;
     var uiLeft = this.scrollarea.scrollLeft;
     var uiBottom = uiTop + this.scrollarea.offsetHeight;
     var uiRight = uiLeft + this.scrollarea.offsetWidth;
+    this.fillRowsRange(uiTop, uiLeft, uiBottom, uiRight);
+  }
+
+  fillRowsRange (uiTop, uiLeft, uiBottom, uiRight) {
     var uiTopCount = 0;
     var uiFixedTopCount = uiTop;
 

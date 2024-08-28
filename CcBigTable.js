@@ -66,16 +66,41 @@ class CcBigTable extends HTMLElement {
 
     var mywindow = window.open('', 'PRINT', `height=${window.innerHeight},width=${window.innerWidth}`);
 
-    mywindow.document.write('<html><head><title>' + document.title  + '</title>');
-    mywindow.document.write('</head><body>');
+    mywindow.document.write('<html><head><title>' + document.title  + '</title><link rel="stylesheet" href="cc-material-helpers/material-components-web.css"><link rel="stylesheet" href="cc-material-helpers/materialicons.css"><style>');
+
+    const oldsheets = Array.from(document.styleSheets)
+    oldsheets.forEach(sheet => {
+      console.error("Sheet", sheet);
+      const newSheet = mywindow.document.createElement('style');
+      newSheet.type="text/css";
+      mywindow.document.querySelector('head').appendChild(newSheet);
+      Array.from(sheet.cssRules).forEach(rule => {
+        console.error(rule);
+        mywindow.document.write(rule.cssText + "\r\n")
+      })
+    });
+
+/*
+    var oldstyles = Array.from(document.styleSheets)
+    for(var oldstyle of oldstyles) {
+      for(var oldRule of oldstyle.cssRules) {
+        mywindow.document.write(oldRule.cssText + "\r\n")
+      }
+    }
+*/
+    mywindow.document.write('</style></head><body>');
     mywindow.document.write(this.scrollarea.innerHTML);
     mywindow.document.write('</body></html>');
 
     mywindow.document.close(); // necessary for IE >= 10
     mywindow.focus(); // necessary for IE >= 10*/
 
-    mywindow.print();
-    mywindow.close();
+//    mywindow.document.querySelector('body').innerHTML = this.scrollarea.innerHTML;
+
+    setTimeout(() => {
+      mywindow.print();
+      mywindow.close();
+    }, 100);
   }
 
   fillRows () {

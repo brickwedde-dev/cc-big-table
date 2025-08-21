@@ -393,7 +393,7 @@ class CcBigTableRow extends HTMLElement {
     var aCols = this.querySelectorAll("cc-big-table-cell") || [];
     var aColsIndex = -1;
     var uiLeftCount = 0;
-    var uiFixedLeftCount = uiLeft;
+    var uiFixedLeftCount = 0;
     var aFixed = [];
 
     for(let uiColIndex = 0; uiColIndex < headerDef.cols.length; uiColIndex++) {
@@ -437,6 +437,7 @@ class CcBigTableRow extends HTMLElement {
         colelem.style.display = "block";
         colelem.style.position = "sticky";
         colelem.style.left = (uiFixedLeftCount) + "px";
+        uiFixedLeftCount += width;
       } else {
         colelem.style.backgroundColor = "";
         colelem.style.position = "absolute";
@@ -448,7 +449,6 @@ class CcBigTableRow extends HTMLElement {
       colelem.style.width = width + "px";
 
       uiLeftCount += width;
-      uiFixedLeftCount += width;
 
       var datacol = (datarow && datarow.coldata) ? datarow.coldata[uiColIndex] : null;
       cellrenderer (this, colelem, datacol, datarow, uiRowIndex, uiColIndex);

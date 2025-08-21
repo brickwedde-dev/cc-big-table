@@ -183,15 +183,18 @@ class CcBigTable extends HTMLElement {
 
       if (fixed) {
         aFixed.push(rowelem);
+        rowelem.style.position = "sticky";
+        rowelem.style.top = (uiRowTop - uiTop) + "px";
       } else {
         rowelem.style.backgroundColor = "";
+        rowelem.style.position = "absolute";
+        rowelem.style.top = (uiRowTop) + "px";
       }
 
-      rowelem.style.position = "absolute";
+      rowelem.style.display = "block";
       rowelem.style.left = "0px";
       rowelem.style.width = uiTableWidth + "px";
       rowelem.style.height = height + "px";
-      rowelem.style.top = uiRowTop + "px";
       uiTopCount += height;
       uiFixedTopCount += height;
 
@@ -431,12 +434,15 @@ class CcBigTableRow extends HTMLElement {
 
       if (fixed) {
         aFixed.push (colelem);
+        colelem.style.display = "block";
+        colelem.style.position = "sticky";
+        colelem.style.left = (uiFixedLeftCount) + "px";
       } else {
         colelem.style.backgroundColor = "";
+        colelem.style.position = "absolute";
       }
       colelem.style.overflow = "hidden";
       colelem.style.left = uiColLeft + "px";
-      colelem.style.position = "absolute";
       colelem.style.height = "100%";
       colelem.style.top = "0px";
       colelem.style.width = width + "px";

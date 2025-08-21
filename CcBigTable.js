@@ -434,7 +434,7 @@ class CcBigTableRow extends HTMLElement {
 
       if (fixed) {
         aFixed.push (colelem);
-        colelem.style.display = "block";
+        colelem.style.display = "inline-block";
         colelem.style.position = "sticky";
         colelem.style.left = (uiFixedLeftCount) + "px";
         uiFixedLeftCount += width;
